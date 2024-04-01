@@ -1,0 +1,43 @@
+---
+- name: Configure Servers
+  hosts: ubuntu_servers:centos_servers
+  become: yes
+  vars_files:
+    - config.yaml
+
+  tasks:
+    - name: Ensure required packages
+are installed
+      package
+        name: "{{item}}"
+        state: present
+      loop: "{{ required_packages }}"
+      become yes
+
+     - name: Copy configuration files
+       copy:
+         src: "{{ item.src }}"
+         dest: "{{ item.dest }}"
+       with_items: "{{ config_files }}"
+       become: yes
+
+---
+required packages:
+  - nginx
+  - apache2
+  - mysql
+  - httpd
+  - mariadb
+
+config_files:
+  - src: /path/to/source/nginx.conf
+    dest: /etc/nginx/nginx.conf
+  - src: /path/to/source/apache2.conf
+    dest: /etc/apache2/apache2.conf
+  - src: /path/to/source/mysql.cnf
+    dest: /etc/mysql/mysql.cnf
+  - src: /path/to/source/httpd.conf
+    dest: /etc/httpd/httpd.conf
+  - src: /path/to/source/mariadb.cnf
+    dest: /etc/my.cnf
+
